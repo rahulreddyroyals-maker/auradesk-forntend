@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 33% 98%;       /* warm off-white */
+    --foreground: 240 6% 6%;        /* near-black ink */
+    --card: 0 0% 100%;
+    --card-foreground: 240 6% 6%;
+    --primary: 43 46% 51%;          /* aura gold */
+    --primary-foreground: 0 0% 100%;
+    --muted: 40 20% 94%;
+    --muted-foreground: 240 4% 40%;
+    --border: 40 15% 88%;
+  }
+
+  .dark {
+    --background: 240 6% 6%;
+    --foreground: 40 20% 96%;
+    --card: 240 6% 9%;
+    --card-foreground: 40 20% 96%;
+    --primary: 43 46% 58%;
+    --primary-foreground: 240 6% 6%;
+    --muted: 240 5% 14%;
+    --muted-foreground: 240 4% 65%;
+    --border: 240 5% 18%;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-card/70 backdrop-blur-md border border-border shadow-glass;
+  }
+}
