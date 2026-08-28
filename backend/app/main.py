@@ -42,7 +42,13 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.FRONTEND_ORIGINS,
+    # NOTE: use settings.frontend_origins_list here, NOT settings.FRONTEND_ORIGINS
+    # directly — FRONTEND_ORIGINS is the raw configured string (which may be
+    # plain-text or JSON, with or without a trailing slash); frontend_origins_list
+    # is the parsed, normalized list CORSMiddleware actually needs. Passing the
+    # raw string here would silently produce a CORS allowlist of one
+    # character-by-character-iterated string, matching nothing real.
+    allow_origins=settings.frontend_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -74,20 +80,3 @@ app.include_router(analytics_router.router, prefix=settings.API_V1_PREFIX)
 app.include_router(appointments_router.router, prefix=settings.API_V1_PREFIX)
 app.include_router(team_router.router, prefix=settings.API_V1_PREFIX)
 app.include_router(logs_router.router, prefix=settings.API_V1_PREFIX)
-
-# This completes the Phase 0-6 roadmap. Remaining known simplifications
-# (see README): keyword-based KB search instead of pgvector similarity,
-# per-turn batch voice STT/TTS instead of continuous streaming, and
-# RLS as a defense-in-depth layer rather than the primary tenant
-# isolation boundary (the backend connects as table owner, which
-# Postgres exempts from RLS — see Phase 0 notes).
-
-# Phase 5+ still to come: swapping knowledge-base lookup from keyword
-# search to pgvector similarity once an embedding provider is set, and
-# analytics/billing/polish for Phase 6.
-
-# Phase 4+ still to come: Messenger/Instagram adapters, and swapping
-# knowledge-base lookup from keyword search to pgvector similarity once
-# an embedding provider is set. Voice pipeline is per-turn batch STT/TTS
-# (see app/orchestrator/voice_pipeline.py) — Cartesia's WebSocket
-# streaming API is a natural lower-latency upgrade once this is proven.

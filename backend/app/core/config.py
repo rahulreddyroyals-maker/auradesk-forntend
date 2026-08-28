@@ -5,6 +5,7 @@ All environment-dependent values live here, loaded once at startup.
 Never read os.environ directly elsewhere in the app — import `settings`.
 """
 from functools import lru_cache
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -59,7 +60,39 @@ class Settings(BaseSettings):
     POSTHOG_API_KEY: str = ""
 
     # CORS
-    FRONTEND_ORIGINS: list[str] = ["http://localhost:3001"]
+    #
+    # Deliberately typed as a plain `str`, not `list[str]` — pydantic-
+    # settings tries to JSON-decode any list-typed env var BEFORE our own
+    # validation logic ever runs, and a value that isn't valid JSON
+    # (which is exactly what a dashboard text box like Railway's
+    # naturally produces if you don't remember the brackets/quotes)
+    # crashes the whole app at startup with an opaque error, not a
+    # helpful one. Keeping this as a raw string sidesteps that entirely;
+    # frontend_origins_list below does our own forgiving parsing.
+    #
+    # Accepts EITHER a JSON array (e.g. '["https://app.example.com"]') OR
+    # a plain comma-separated string (e.g. 'https://app.example.com' or
+    # 'https://a.com,https://b.com'). Every value is trimmed and has any
+    # trailing slash stripped, since a trailing slash on an Origin never
+    # matches what the browser actually sends and silently breaks CORS
+    # with no useful error.
+    FRONTEND_ORIGINS: str = "http://localhost:3001"
+
+    @property
+    def frontend_origins_list(self) -> list[str]:
+        raw = self.FRONTEND_ORIGINS.strip()
+        if raw.startswith("["):
+            import json
+
+            try:
+                parsed = json.loads(raw)
+                return [str(v).strip().rstrip("/") for v in parsed]
+            except json.JSONDecodeError:
+                # Not valid JSON despite looking like it — fall back to
+                # treating the whole thing as one origin rather than
+                # crashing app startup over a formatting mistake.
+                return [raw.strip().rstrip("/")]
+        return [v.strip().rstrip("/") for v in raw.split(",") if v.strip()]
 
 
 @lru_cache
