@@ -59,6 +59,21 @@ class Settings(BaseSettings):
     SENTRY_DSN: str = ""
     POSTHOG_API_KEY: str = ""
 
+    # Demo / sales environment
+    #
+    # A standing, self-serve demo clinic that sales can point prospects
+    # at (see app/api/v1/demo.py). DEMO_RESEED_TOKEN gates the one
+    # destructive action (wiping and regenerating the demo clinic's
+    # story data) — it is deliberately NOT a NEXT_PUBLIC_ value and
+    # never reaches the frontend bundle; only you, calling the reseed
+    # endpoint directly (curl/Postman) before a demo, need it. Leaving
+    # it unset disables the reseed endpoint entirely (fails closed, not
+    # open) while the read-only /demo/info endpoint still works.
+    DEMO_RESEED_TOKEN: str = ""
+    DEMO_LOGIN_EMAIL: str = "demo@auradesk.ai"
+    DEMO_LOGIN_PASSWORD: str = "AuraDeskDemo2026!"
+    DEMO_CLINIC_NAME: str = "Glow Aesthetic Studio"
+
     # CORS
     #
     # Deliberately typed as a plain `str`, not `list[str]` — pydantic-

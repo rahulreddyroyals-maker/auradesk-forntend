@@ -27,7 +27,6 @@ export default function LoginPage() {
       setError(signInError.message);
       return;
     }
-
     // A user with no `staff` row yet has no clinic_id claim on their JWT —
     // /auth/me will fail for them, which means they still need onboarding.
     try {
@@ -48,41 +47,25 @@ export default function LoginPage() {
         </div>
         <h1 className="text-lg font-medium mb-1">Log in</h1>
         <p className="text-sm text-muted-foreground mb-6">Welcome back.</p>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@clinic.com"
-            />
+            <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@clinic.com" />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-            />
+            <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Logging in…" : "Log in"}
-          </Button>
+          <Button type="submit" className="w-full" disabled={loading}>{loading ? "Logging in…" : "Log in"}</Button>
         </form>
-
-        <p className="mt-6 text-center text-sm text-muted-foreground">
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          Want to see a live demo first?{" "}
+          <Link href="/demo" className="text-aura-gold-600 hover:underline">View demo details</Link>
+        </p>
+        <p className="mt-2 text-center text-sm text-muted-foreground">
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-aura-gold-600 hover:underline">
-            Sign up
-          </Link>
+          <Link href="/signup" className="text-aura-gold-600 hover:underline">Sign up</Link>
         </p>
       </Card>
     </div>
