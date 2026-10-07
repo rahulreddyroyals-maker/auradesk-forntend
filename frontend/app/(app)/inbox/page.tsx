@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { TopBar } from "@/components/shared/top-bar";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Card } from "@/components/ui/primitives";
@@ -77,27 +78,29 @@ export default function InboxPage() {
             {conversations.map((c) => {
               const Icon = channelIcons[c.channel] ?? MessagesSquare;
               return (
-                <Card key={c.id} className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-aura-gold-500/10">
-                      <Icon className="h-4 w-4 text-aura-gold-700" />
+                <Link key={c.id} href={`/inbox/${c.id}`}>
+                  <Card className="flex items-center justify-between gap-4 transition-colors hover:bg-muted/60 cursor-pointer">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-aura-gold-500/10">
+                        <Icon className="h-4 w-4 text-aura-gold-700" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate">
+                          {c.patient_name || "Unknown patient"}
+                        </p>
+                        <p className="text-xs text-muted-foreground capitalize">
+                          {c.channel.replace("_", " ")} · {formatTime(c.started_at)}
+                          {c.ai_handled ? " · Handled by AI" : ""}
+                        </p>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {c.patient_name || "Unknown patient"}
-                      </p>
-                      <p className="text-xs text-muted-foreground capitalize">
-                        {c.channel.replace("_", " ")} · {formatTime(c.started_at)}
-                        {c.ai_handled ? " · Handled by AI" : ""}
-                      </p>
-                    </div>
-                  </div>
-                  <span
-                    className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-medium capitalize ${statusStyles[c.status] ?? "bg-muted text-muted-foreground"}`}
-                  >
-                    {c.status}
-                  </span>
-                </Card>
+                    <span
+                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-medium capitalize ${statusStyles[c.status] ?? "bg-muted text-muted-foreground"}`}
+                    >
+                      {c.status}
+                    </span>
+                  </Card>
+                </Link>
               );
             })}
           </div>

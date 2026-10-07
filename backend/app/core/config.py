@@ -74,6 +74,22 @@ class Settings(BaseSettings):
     DEMO_LOGIN_PASSWORD: str = "AuraDeskDemo2026!"
     DEMO_CLINIC_NAME: str = "Glow Aesthetic Studio"
 
+    # Platform admin (you, managing every clinic — distinct from a clinic's
+    # own owner/admin/front_desk staff roles, see app/api/v1/platform_admin.py)
+    #
+    # Deliberately an email allowlist, not a database table: there's no
+    # migration to run, and granting yourself access is just adding your
+    # own Supabase account's email here. Comma-separated for more than one
+    # person. Checked against the verified JWT's own "email" claim — never
+    # trust a client-supplied email instead. Leaving this unset disables
+    # every /api/v1/admin/* route (fails closed, same pattern as
+    # DEMO_RESEED_TOKEN above).
+    PLATFORM_ADMIN_EMAILS: str = ""
+
+    @property
+    def platform_admin_emails_list(self) -> list[str]:
+        return [e.strip().lower() for e in self.PLATFORM_ADMIN_EMAILS.split(",") if e.strip()]
+
     # CORS
     #
     # Deliberately typed as a plain `str`, not `list[str]` — pydantic-

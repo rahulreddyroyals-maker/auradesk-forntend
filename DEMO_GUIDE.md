@@ -146,3 +146,40 @@ what a paying customer's billing page looks like, not an empty trial.
   gets handed to a human immediately, it never tries to resolve that itself."
 - Show the Knowledge Base page and explain that whatever's answered there
   is answered from the clinic's own approved content, not improvised.
+
+## 6. Two more additions in this delivery
+
+**Full conversation view.** The Inbox page previously only showed a
+one-line summary per conversation (name, channel, status) with no way to
+open it — the backend already had a `GET /conversations/{id}` endpoint
+returning the full message thread, but nothing in the frontend called it.
+Inbox rows are now clickable and open `/inbox/<id>`, a chat-style
+transcript showing every patient/AI/staff message in order. This isn't
+demo-specific — it fixes the same gap for real clinics too.
+
+**Platform admin panel** (`/admin`). A separate page, outside the regular
+clinic app, for you to see and manage every clinic that signs up —
+distinct from a clinic's own owner/admin/front_desk roles, which can only
+ever see their own clinic. It lists each clinic's status, plan, staff
+count, and subscription state, and lets you suspend/reactivate a clinic
+or mark its subscription active/past-due by hand (this writes your own
+database directly — it does not call Stripe; keep it in sync with your
+actual Stripe dashboard until a Stripe webhook handler does that
+automatically).
+
+Access is controlled by one new Railway variable — no new login, no new
+database table:
+```
+PLATFORM_ADMIN_EMAILS=you@example.com
+```
+Comma-separate multiple addresses if more than one person needs access.
+It's checked against your own Supabase account's verified email, so you
+just need to be logged in with an account using that email — the same
+login you already use for your own clinic (or no clinic at all, if you'd
+rather keep a separate account for this). Leaving the variable unset
+disables every `/admin/*` route entirely (fails closed).
+
+To use it: log in at `/login` with an account whose email matches
+`PLATFORM_ADMIN_EMAILS`, then visit `/admin` directly (there's no link to
+it in the regular sidebar — it's not meant to be discoverable by clinic
+users).

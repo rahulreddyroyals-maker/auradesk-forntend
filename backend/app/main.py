@@ -24,6 +24,7 @@ from app.api.v1 import appointments as appointments_router
 from app.api.v1 import team as team_router
 from app.api.v1 import logs as logs_router
 from app.api.v1 import demo as demo_router
+from app.api.v1 import platform_admin as platform_admin_router
 from app.core.config import settings
 
 if settings.SENTRY_DSN:
@@ -82,3 +83,4 @@ app.include_router(appointments_router.router, prefix=settings.API_V1_PREFIX)
 app.include_router(team_router.router, prefix=settings.API_V1_PREFIX)
 app.include_router(logs_router.router, prefix=settings.API_V1_PREFIX)
 app.include_router(demo_router.router, prefix=settings.API_V1_PREFIX)
+app.include_router(platform_admin_router.router, prefix=settings.API_V1_PREFIX)
